@@ -1,4 +1,4 @@
-package io.github.capucho.restfulwebservices;
+package io.github.capucho.restfulwebservices.helloworld;
 
 public class HelloWorldBean {
 
