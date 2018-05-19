@@ -1,11 +1,19 @@
 package io.github.capucho.restfulwebservices.user;
 
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,17 +35,20 @@ public class UserController {
 	}
 
 	@GetMapping(path = "/users/{id}")
-	public ResponseEntity<User> retrieveUser(@PathVariable("id") Integer id) {
+	public Resource<User> retrieveUser(@PathVariable("id") Integer id) {
 		User user = userDao.findUser(id);
 		if(user == null) {
 			//return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
 			throw new UserNotFoundException("Not found");
 		}
-		return new ResponseEntity<User>(user, HttpStatus.OK);
+		
+		Resource<User> resource = new Resource<User>(user);
+		resource.add(linkTo(methodOn(this.getClass()).findAll()).withRel("all-users"));
+		return resource;
 	}
 
 	@PostMapping(path = "/users")
-	public ResponseEntity<Object> createUser(@RequestBody User user) {
+	public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
 
 		try {
 			User savedUser = userDao.save(user);
@@ -50,6 +61,17 @@ public class UserController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
+	}
+	
+	@DeleteMapping(path = "/users/{id}")
+	public ResponseEntity<Object> deleteUser(@PathVariable Integer id) {
+		User user = userDao.deleteById(id);
+		
+		if(user == null) {
+			throw new UserNotFoundException("id [" + id + "] ");
+		}
+		
+		return ResponseEntity.noContent().build();
 	}
 
 }

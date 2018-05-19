@@ -2,6 +2,7 @@ package io.github.capucho.restfulwebservices.user;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +37,18 @@ public class UserDao {
 		Optional<User> findFirst = users.stream().filter(u -> u.getId().equals(id)).findFirst();
 		if(findFirst.isPresent()) {
 			return findFirst.get();
+		}
+		return null;
+	}
+
+	public User deleteById(Integer id) {
+		Iterator<User> iterator = users.iterator();
+		if(iterator.hasNext()) {
+			User user = iterator.next();
+			if(user.getId().equals(id)) {
+				iterator.remove();
+				return user;
+			}
 		}
 		return null;
 	}
