@@ -1,0 +1,9 @@
+docker rm restful-database  && docker run --name restful-database -e MYSQL_ROOT_PASSWORD=root -v /Users/Capucho/Coding/Java/workspace/restful_database/:/var/lib/mysql -p 3306:3306 -d mysql
+
+docker exec -it restful-database bash
+
+mysql -u root -p
+Creating database: create database restful;
+Selecting database: use restful;
+
+Connecting directly to restful : mysql -h localhost -u root -p restful
